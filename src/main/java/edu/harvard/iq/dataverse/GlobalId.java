@@ -26,9 +26,11 @@ public class GlobalId implements java.io.Serializable {
     
     public static final String DOI_PROTOCOL = "doi";
     public static final String HDL_PROTOCOL = "hdl";
+    public static final String NBN_PROTOCOL = "urn:nbn";
     public static final String HDL_RESOLVER_URL = "https://hdl.handle.net/";
     public static final String DOI_RESOLVER_URL = "https://doi.org/";
-    
+    public static final String NBN_RESOLVER_URL = "https://dans.knaw.nl/";
+
     public static Optional<GlobalId> parse(String identifierString) {
         try {
             return Optional.of(new GlobalId(identifierString));
@@ -117,6 +119,10 @@ public class GlobalId implements java.io.Serializable {
         if (protocol == null || authority == null || identifier == null) {
             return "";
         }
+        // check for nbn
+        if ("urn.nbn".equals(protocol)) {
+            return protocol + ":" + authority + ":" + identifier;
+        }
         return protocol + ":" + authority + "/" + identifier;
     }
     
@@ -130,7 +136,9 @@ public class GlobalId implements java.io.Serializable {
                url = new URL(DOI_RESOLVER_URL + authority + "/" + identifier); 
             } else if (protocol.equals(HDL_PROTOCOL)){
                url = new URL(HDL_RESOLVER_URL + authority + "/" + identifier);  
-            }           
+            } else if (protocol.equals(NBN_PROTOCOL)) {
+                url = new URL(NBN_RESOLVER_URL + authority + "/" + identifier);
+            }
         } catch (MalformedURLException ex) {
             logger.log(Level.SEVERE, null, ex);
         }       
@@ -152,8 +160,6 @@ public class GlobalId implements java.io.Serializable {
      *       identifier: 111012
      *
      * @param identifierString
-     * @param separator the string that separates the authority from the identifier.
-     * @param destination the global id that will contain the parsed data.
      * @return {@code destination}, after its fields have been updated, or
      *         {@code null} if parsing failed.
      */
@@ -168,7 +174,24 @@ public class GlobalId implements java.io.Serializable {
             if (index2 > 0 && (index2 + 1) < identifierString.length()) { // '/' found with one or more characters
                                                                           // between ':'
                 protocol = identifierString.substring(0, index1); // and '/' and there are characters after '/'
-                if (!"doi".equals(protocol) && !"hdl".equals(protocol)) {
+
+                // parse urn:nbn added on 20201001 by Vic
+                if ("urn".equals(protocol)) {
+                    logger.severe("### parsing urn:nbn: " + identifierString);
+                    // look for : after urn, it should be nbn
+                    logger.severe("### index1 originall was " + index1);
+                    index1 = identifierString.indexOf(':', index1 + 1);
+                    logger.severe("### new index1 is: " + index1);
+                    // get new protocol, should be urn:nbn
+                    protocol = identifierString.substring(0, index1);
+
+                    index2 = identifierString.indexOf('/', index1 + 1);
+                    logger.severe("### new index2 is: " + index2);
+                }
+                // end of new addition
+
+                if (!"doi".equals(protocol) && !"hdl".equals(protocol) && !"urn:nbn".equals(protocol)) {
+                    logger.log(Level.SEVERE, "Wrong protocol for PID type: {0}", protocol);
                     return false;
                 }
                 //Strip any whitespace, ; and ' from authority (should finding them cause a failure instead?)

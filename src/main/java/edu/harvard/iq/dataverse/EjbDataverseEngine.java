@@ -55,7 +55,10 @@ import javax.validation.ConstraintViolationException;
 @Named
 public class EjbDataverseEngine {
     private static final Logger logger = Logger.getLogger(EjbDataverseEngine.class.getCanonicalName());
-    
+
+    @EJB
+    NbnServiceBean nbnServiceBean;
+
     @EJB
     DatasetServiceBean datasetService;
 
@@ -453,6 +456,10 @@ public class EjbDataverseEngine {
                 @Override
                 public FakePidProviderServiceBean fakePidProvider() {
                     return fakePidProvider;
+                }
+
+                public NbnServiceBean nbnPidProvider() {
+                    return nbnServiceBean;
                 }
 
                 @Override

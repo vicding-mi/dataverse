@@ -36,6 +36,9 @@ public class TestCommandContext implements CommandContext {
     TestSettingsServiceBean settings = new TestSettingsServiceBean();
 
     @Override
+    public NbnServiceBean nbnPidProvider() { return null; }
+
+    @Override
     public DatasetServiceBean datasets() {
         return null;
     }

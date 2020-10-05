@@ -8,7 +8,7 @@ Bootstrap Migration Tips
 * Cant use HTML entities. Use the actual unicode char instead.
 * HTML5's attributes using passthrough:
 	
-	h:inputText id="email" value="#{bean.email}">
+	<h:inputText id="email" value="#{bean.email}">
 	<f:passThroughAttribute name="type" value="email"/>
 	<f:passThroughAttribute name="placeholder"
 		value="Enter email"/>
