@@ -74,7 +74,6 @@ class BeanDispatcher {
     static final Map<String, Function<CommandContext, GlobalIdServiceBean>> DISPATCHER = new HashMap<>();
 
     static {
-        DISPATCHER.put("urn:nbn", ctxt->ctxt.nbnPidProvider() );
         DISPATCHER.put("hdl", ctxt->ctxt.handleNet() );
         DISPATCHER.put("doi", ctxt->{
             String doiProvider = ctxt.settings().getValueForKey(Key.DoiProvider, "");
@@ -82,9 +81,6 @@ class BeanDispatcher {
                 case "EZID": return ctxt.doiEZId();
                 case "DataCite": return ctxt.doiDataCite();
                 case "FAKE": return ctxt.fakePidProvider();
-                case "URN:NBN":
-                    logger.severe("### dispatcher in GlobalIdServiceBean is using NBN with DOI claus");
-                    return ctxt.nbnPidProvider();
                 default: 
                     logger.log(Level.SEVERE, "Unknown doiProvider: {0}", doiProvider);
                     return null;

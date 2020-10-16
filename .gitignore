@@ -66,8 +66,3 @@ venv
 scripts/search/data/binary/trees.png.thumb140
 src/main/webapp/resources/images/cc0.png.thumb140
 src/main/webapp/resources/images/dataverseproject.png.thumb140
-
-# ignore IDE files, build files
-.gradle
-overlays
-src/main/java/edu/harvard/iq/dataverse/DOIDaraServiceBean.java
