@@ -54,6 +54,10 @@ scripts/installer/default.config
 **/*.iml
 /bin/
 
+# do not track overlays folder ??
+overlays
+overlays/*
+
 # do not track Visual Studio Code files
 .vscode
 
