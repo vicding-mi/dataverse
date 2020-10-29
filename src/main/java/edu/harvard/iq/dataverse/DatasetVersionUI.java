@@ -10,14 +10,7 @@ import edu.harvard.iq.dataverse.util.StringUtil;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -41,6 +34,21 @@ public class DatasetVersionUI implements Serializable {
 
     private Map<MetadataBlock, List<DatasetField>> metadataBlocksForView = new HashMap<>();
     private Map<MetadataBlock, List<DatasetField>> metadataBlocksForEdit = new HashMap<>();
+
+    // #### pass only license field to Terms tab
+    public DatasetField getLicenseMetadataBlock(String metadataBlockName, String datasetFieldName) {
+        for (Map.Entry<MetadataBlock, List<DatasetField>> item : metadataBlocksForView.entrySet()) {
+            if (Objects.equals(item.getKey().getName(), metadataBlockName)) {
+                for (DatasetField dsf : item.getValue()) {
+                    if (Objects.equals(dsf.getDatasetFieldType().getName(), datasetFieldName)) {
+                        return dsf;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    // #### / end pass only license field to Terms tab
 
     public Map<MetadataBlock, List<DatasetField>> getMetadataBlocksForView() {
         return metadataBlocksForView;

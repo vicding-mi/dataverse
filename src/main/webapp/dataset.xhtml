@@ -793,6 +793,11 @@
                                     <ui:param name="editMode" value="#{!empty DatasetPage.editMode ? 'LICENSE': ''}"/>
                                     <ui:param name="termsOfUseAndAccess" value="#{DatasetPage.workingVersion.termsOfUseAndAccess}"/>
                                     <ui:param name="datasetPage" value="true"/>
+
+                                    <!-- pass metadata blocks to license page-->
+                                    <ui:param name="dsfLicense" value="#{DatasetPage.datasetVersionUI.getLicenseMetadataBlock('dansAccessAndLicense', 'dansLicense')}"/>
+                                    <!-- / end pass metadata blocks to license page-->
+
                                 </ui:include>
                             </p:tab>
                             <!-- 4.2.1: see above -->
