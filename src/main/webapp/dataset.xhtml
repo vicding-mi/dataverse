@@ -780,7 +780,9 @@
                                 <ui:include src="metadataFragment.xhtml">
                                     <ui:param name="datasetPage" value="true"/>
                                     <ui:param name="editMode" value="#{!empty DatasetPage.editMode ? DatasetPage.editMode : ''}"/>
-                                    <ui:param name="metadataBlocks" value="#{!empty DatasetPage.editMode ? DatasetPage.datasetVersionUI.metadataBlocksForEdit.entrySet().toArray(): DatasetPage.datasetVersionUI.metadataBlocksForView.entrySet().toArray()}"/>
+<!--                                    <ui:param name="metadataBlocks" value="#{!empty DatasetPage.editMode ? DatasetPage.datasetVersionUI.metadataBlocksForEdit.entrySet().toArray(): DatasetPage.datasetVersionUI.metadataBlocksForView.entrySet().toArray()}"/>-->
+                                    <ui:param name="metadataBlocks" value="#{!empty DatasetPage.editMode ?DatasetPage.datasetVersionUI.getMetadataBlocksWithoutLicenseForEdit('dansAccessAndLicense', DatasetPage.datasetVersionUI.metadataBlocksForEdit).entrySet().toArray(): DatasetPage.datasetVersionUI.getMetadataBlocksWithoutLicenseForView('dansAccessAndLicense', DatasetPage.datasetVersionUI.metadataBlocksForView).entrySet().toArray()}"/>
+<!--                                    <ui:param name="mbTest" value="#{DatasetPage.datasetVersionUI.getMetadataBlocksWithoutLicenseForViewTest('dansAccessAndLicense', DatasetPage.datasetVersionUI.metadataBlocksForView)}"/>-->
                                     <ui:param name="publicationDate" value="#{DatasetPage.dataset.publicationDate != null ? DatasetPage.dataset.publicationDateFormattedYYYYMMDD : ''}"/>
                                     <ui:param name="globalId" value="#{DatasetPage.dataset.globalIdString}"/>
                                     <ui:param name="altPID" value="#{DatasetPage.dataset.alternativePersistentIdentifier}"/>
@@ -795,7 +797,7 @@
                                     <ui:param name="datasetPage" value="true"/>
 
                                     <!-- pass metadata blocks to license page-->
-                                    <ui:param name="dsfLicense" value="#{DatasetPage.datasetVersionUI.getLicenseMetadataBlock('dansAccessAndLicense', 'dansLicense')}"/>
+                                    <ui:param name="dsfLicense" value="#{!empty DatasetPage.editMode ? DatasetPage.datasetVersionUI.getLicenseMetadataBlock('dansAccessAndLicense', 'dansLicense', 'LICENSE'): DatasetPage.datasetVersionUI.getLicenseMetadataBlock('dansAccessAndLicense', 'dansLicense', 'LICENSE')}"/>
                                     <!-- / end pass metadata blocks to license page-->
 
                                 </ui:include>

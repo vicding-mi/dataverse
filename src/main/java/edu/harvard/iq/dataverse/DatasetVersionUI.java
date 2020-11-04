@@ -34,10 +34,13 @@ public class DatasetVersionUI implements Serializable {
 
     private Map<MetadataBlock, List<DatasetField>> metadataBlocksForView = new HashMap<>();
     private Map<MetadataBlock, List<DatasetField>> metadataBlocksForEdit = new HashMap<>();
+    private Map<MetadataBlock, List<DatasetField>> metadataBlocksWithoutLicenseForView = new HashMap<>();
+    private Map<MetadataBlock, List<DatasetField>> metadataBlocksWithoutLicenseForEdit = new HashMap<>();
 
     // #### pass only license field to Terms tab
-    public DatasetField getLicenseMetadataBlock(String metadataBlockName, String datasetFieldName) {
-        for (Map.Entry<MetadataBlock, List<DatasetField>> item : metadataBlocksForView.entrySet()) {
+    public DatasetField getLicenseMetadataBlock(String metadataBlockName, String datasetFieldName, String action) {
+        Map<MetadataBlock, List<DatasetField>> currentMetadataBlocks = action.equals("VIEW") ? metadataBlocksForView: metadataBlocksForEdit;
+        for (Map.Entry<MetadataBlock, List<DatasetField>> item : currentMetadataBlocks.entrySet()) {
             if (Objects.equals(item.getKey().getName(), metadataBlockName)) {
                 for (DatasetField dsf : item.getValue()) {
                     if (Objects.equals(dsf.getDatasetFieldType().getName(), datasetFieldName)) {
@@ -50,8 +53,50 @@ public class DatasetVersionUI implements Serializable {
     }
     // #### / end pass only license field to Terms tab
 
+    // #### clone map
+    static<K, V> Map<K, V> cloneMap(Map<K, V> orgMap) {
+        return new HashMap<>(orgMap);
+    }
+    // #### / end clone
+
     public Map<MetadataBlock, List<DatasetField>> getMetadataBlocksForView() {
         return metadataBlocksForView;
+    }
+
+    public Map<MetadataBlock, List<DatasetField>> getMetadataBlocksWithoutLicenseForView(MetadataBlock key) {
+        metadataBlocksForView.remove(key);
+        return metadataBlocksForView;
+    }
+
+    public Map<MetadataBlock, List<DatasetField>> getMetadataBlocksWithoutLicenseForView(String keyName, Map<MetadataBlock, List<DatasetField>> orgMap) {
+        MetadataBlock key = getLicenseMetadataBlockKey(keyName, orgMap);
+        return getMetadataBlocksWithoutLicenseForView(key);
+    }
+
+//    public String getMetadataBlocksWithoutLicenseForViewTest(String keyName, Map<MetadataBlock, List<DatasetField>> orgMap) {
+//        StringBuilder result = new StringBuilder();
+//        MetadataBlock key = getLicenseMetadataBlockKey(keyName, orgMap);
+//        if (!key.isEmpty()) {
+//            result.append(key.getDisplayName()).append("; ");
+//        } else {
+//            return "empty key";
+//        }
+//        Map<MetadataBlock, List<DatasetField>> mdb = getMetadataBlocksWithoutLicenseForView(key);
+//        if (!mdb.isEmpty()) {
+//            for (Map.Entry<MetadataBlock, List<DatasetField>> item: mdb.entrySet()) {
+//                result.append(item.getKey().getDisplayName()).append("; ");
+//            }
+//        }
+//        return result.toString();
+//    }
+
+    MetadataBlock getLicenseMetadataBlockKey(String keyName, Map<MetadataBlock, List<DatasetField>> orgMap) {
+        for (Map.Entry<MetadataBlock, List<DatasetField>> item : orgMap.entrySet()) {
+            if (item.getKey().getName().equals(keyName)) {
+                return item.getKey();
+            }
+        }
+        return null;
     }
 
     public void setMetadataBlocksForView(Map<MetadataBlock, List<DatasetField>> metadataBlocksForView) {
@@ -65,7 +110,17 @@ public class DatasetVersionUI implements Serializable {
     public void setMetadataBlocksForEdit(Map<MetadataBlock, List<DatasetField>> metadataBlocksForEdit) {
         this.metadataBlocksForEdit = metadataBlocksForEdit;
     }
-    
+
+    public Map<MetadataBlock, List<DatasetField>> getMetadataBlocksWithoutLicenseForEdit(MetadataBlock key) {
+        metadataBlocksForEdit.remove(key);
+        return metadataBlocksForEdit;
+    }
+
+    public Map<MetadataBlock, List<DatasetField>> getMetadataBlocksWithoutLicenseForEdit(String keyName, Map<MetadataBlock, List<DatasetField>> orgMap) {
+        MetadataBlock key = getLicenseMetadataBlockKey(keyName, orgMap);
+        return getMetadataBlocksWithoutLicenseForEdit(key);
+    }
+
     public DatasetVersionUI  initDatasetVersionUI(DatasetVersion datasetVersion, boolean createBlanks) {
         /*takes in the values of a dataset version 
          and apportions them into lists for 

@@ -7,6 +7,7 @@
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jsf="http://xmlns.jcp.org/jsf">
     <!-- View Mode -->
+<!--    <p>mb test #{mbTest}</p>-->
     <div class="panel-group" jsf:rendered="${empty editMode  or managePage}">
         <o:importFunctions type="edu.harvard.iq.dataverse.util.MarkupChecker" />
         <ui:repeat value="#{metadataBlocks}"
