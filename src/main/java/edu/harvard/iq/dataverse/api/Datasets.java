@@ -278,7 +278,7 @@ public class Datasets extends AbstractApiBean {
                     .type(mediaType).
                     build();
         } catch (Exception wr) {
-            return error(Response.Status.FORBIDDEN, "Export Failed");
+            return error(Response.Status.FORBIDDEN, "Status Forbidden: Export Failed");
         }
     }
 
