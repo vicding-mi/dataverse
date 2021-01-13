@@ -53,6 +53,7 @@ public class PublishDatasetCommand extends AbstractPublishDatasetCommand<Publish
     
     public PublishDatasetCommand(Dataset datasetIn, DataverseRequest aRequest, boolean minor, boolean isPidPrePublished) {
         super(datasetIn, aRequest);
+        logger.info("##### PublishDatasetCommand super constructor done");
         minorRelease = minor;
         datasetExternallyReleased = isPidPrePublished;
         request = aRequest;
@@ -60,9 +61,10 @@ public class PublishDatasetCommand extends AbstractPublishDatasetCommand<Publish
 
     @Override
     public PublishDatasetResult execute(CommandContext ctxt) throws CommandException {
-        
+        logger.info("##### verifying command arguments");
         verifyCommandArguments();
-        
+        logger.info("##### after verifying command arguments");
+
         // Invariant 1: If we're here, publishing the dataset makes sense, from a "business logic" point of view.
         // Invariant 2: The latest version of the dataset is the one being published, EVEN IF IT IS NOT DRAFT.
         //              When importing a released dataset, the latest version is marked as RELEASED.
@@ -88,6 +90,7 @@ public class PublishDatasetCommand extends AbstractPublishDatasetCommand<Publish
         
         Optional<Workflow> prePubWf = ctxt.workflows().getDefaultWorkflow(TriggerType.PrePublishDataset);
         if ( prePubWf.isPresent() ) {
+            logger.info("##### prepub WF");
             // We start a workflow
             theDataset = ctxt.em().merge(theDataset);
             ctxt.em().flush();
@@ -95,6 +98,7 @@ public class PublishDatasetCommand extends AbstractPublishDatasetCommand<Publish
             return new PublishDatasetResult(theDataset, Status.Workflow);
             
         } else{
+            logger.info("##### NO prepub WF");
             // We will skip trying to register the global identifiers for datafiles 
             // if "dependent" file-level identifiers are requested, AND the naming 
             // protocol of the dataset global id is different from the 
@@ -116,7 +120,7 @@ public class PublishDatasetCommand extends AbstractPublishDatasetCommand<Publish
             
             if ( registerGlobalIdsForFiles ){
                 registerGlobalIdsForFiles = currentGlobalAuthority.equals( theDataset.getAuthority() );
-	    }
+	        }
             
             boolean validatePhysicalFiles = ctxt.systemConfig().isDatafileValidationOnPublishEnabled();
 
@@ -125,20 +129,27 @@ public class PublishDatasetCommand extends AbstractPublishDatasetCommand<Publish
             
             //if ((registerGlobalIdsForFiles || validatePhysicalFiles) 
             //        && theDataset.getFiles().size() > ctxt.systemConfig().getPIDAsynchRegFileCount()) { 
-                
+            logger.info("##### publishing DS");
             String info = "Publishing the dataset; "; 
             info += registerGlobalIdsForFiles ? "Registering PIDs for Datafiles; " : "";
             info += validatePhysicalFiles ? "Validating Datafiles Asynchronously" : "";
-            
+
+            logger.info("##### get user");
             AuthenticatedUser user = request.getAuthenticatedUser();
+            logger.info("##### set db lock");
             DatasetLock lock = new DatasetLock(DatasetLock.Reason.finalizePublication, user);
+            logger.info("##### set DS to db lock");
             lock.setDataset(theDataset);
+            logger.info("##### set lock info");
             lock.setInfo(info);
+            logger.info("##### add dataset lock to ctxt");
             ctxt.datasets().addDatasetLock(theDataset, lock);
+            logger.info("##### merge dataset");
             theDataset = ctxt.em().merge(theDataset);
             // The call to FinalizePublicationCommand has been moved to the new @onSuccess()
             // method:
             //ctxt.datasets().callFinalizePublishCommandAsynchronously(theDataset.getId(), ctxt, request, datasetExternallyReleased);
+            logger.info("##### before return pub result, almost end of process");
             return new PublishDatasetResult(theDataset, Status.Inprogress);
 
             /**

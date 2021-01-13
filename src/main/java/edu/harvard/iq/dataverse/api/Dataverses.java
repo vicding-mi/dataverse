@@ -291,7 +291,7 @@ public class Dataverses extends AbstractApiBean {
             }
             boolean shouldRelease = StringUtil.isTrue(releaseParam);
             DataverseRequest request = createDataverseRequest(u);
-
+            System.out.println("##### before should release");
             if (shouldRelease) {
                 DatasetVersion latestVersion = ds.getLatestVersion();
                 latestVersion.setVersionState(DatasetVersion.VersionState.RELEASED);
@@ -309,12 +309,14 @@ public class Dataverses extends AbstractApiBean {
             JsonObjectBuilder responseBld = Json.createObjectBuilder()
                     .add("id", managedDs.getId())
                     .add("persistentId", managedDs.getGlobalIdString());
-
+            System.out.println("##### before 2nd should release");
             if (shouldRelease) {
                 PublishDatasetResult res = execCommand(new PublishDatasetCommand(managedDs, request, false, shouldRelease));
+                System.out.println("##### in 2nd should release");
                 responseBld.add("releaseCompleted", res.isCompleted());
+                System.out.println("##### after 2nd should release");
             }
-
+            System.out.println("##### before return");
             return created("/datasets/" + managedDs.getId(), responseBld);
 
         } catch (WrappedResponse ex) {

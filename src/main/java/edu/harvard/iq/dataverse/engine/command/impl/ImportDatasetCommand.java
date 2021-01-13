@@ -58,23 +58,31 @@ public class ImportDatasetCommand extends AbstractCreateDatasetCommand {
         if ( ! ctxt.datasets().isIdentifierLocallyUnique(ds) ) {
             throw new IllegalCommandException("Persistent identifier " + ds.getGlobalIdString() + " already exists in this Dataverse installation.", this);
         }
-        
-        String pid = ds.getPersistentURL();
-        GetMethod httpGet = new GetMethod(pid); 
-        httpGet.setFollowRedirects(false);
 
-        HttpClient client = new HttpClient();
+        // check if doi is present
+        logger.info("##### skip doi check");
+        Boolean checkDoi = false;
+        if (checkDoi) {
+            String pid = ds.getPersistentURL();
+            GetMethod httpGet = new GetMethod(pid);
+            httpGet.setFollowRedirects(false);
 
-        try {
-            int responseStatus = client.executeMethod(httpGet);
+            HttpClient client = new HttpClient();
 
-            if ( responseStatus == 404 ) {
-                throw new CommandExecutionException("Provided PID does not exist. Status code for GET '" + pid + "' is 404." , this);
+            try {
+                logger.info("##### before calling http");
+                int responseStatus = client.executeMethod(httpGet);
+                logger.info("##### after calling http");
+                logger.info(String.format("##### after calling http [%s]", responseStatus));
+
+                if (responseStatus == 404) {
+                    throw new CommandExecutionException("Provided PID does not exist. Status code for GET '" + pid + "' is 404.", this);
+                }
+
+            } catch (IOException ex) {
+                logger.log(Level.WARNING, "Error while validating PID at '" + pid + "' for an imported dataset: " + ex.getMessage(), ex);
+                throw new CommandExecutionException("Cannot validate PID due to a connection error: " + ex.getMessage(), this);
             }
-
-        } catch ( IOException ex ) {
-            logger.log(Level.WARNING, "Error while validating PID at '"+pid+"' for an imported dataset: "+ ex.getMessage(), ex);
-            throw new CommandExecutionException("Cannot validate PID due to a connection error: " + ex.getMessage() , this);
         }
                 
     }

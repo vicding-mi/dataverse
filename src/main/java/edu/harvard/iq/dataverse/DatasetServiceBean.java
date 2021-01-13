@@ -402,12 +402,17 @@ public class DatasetServiceBean implements java.io.Serializable {
         }
     }
     
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+//    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DatasetLock addDatasetLock(Dataset dataset, DatasetLock lock) {
+        logger.info("##### lock set dataset");
         lock.setDataset(dataset);
+        logger.info("##### dataset add lock");
         dataset.addLock(lock);
+        logger.info("##### lock start timer");
         lock.setStartTime( new Date() );
+        logger.info("##### persist lock");
         em.persist(lock);
+        logger.info("##### returning lock");
         //em.merge(dataset); 
         return lock;
     }
